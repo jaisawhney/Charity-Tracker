@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid h-100 bg-light">
+    <div class="d-flex justify-content-center align-items-center h-100">
+        <div class="card login-form">
+            <div class="card-body">
+                <h1 class="card-title">Login</h1>
+                <form class="row" action="/login/" method="POST">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" class="form-control" placeholder="Email" required>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mt-3">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" class="form-control" placeholder="Password" required>
+                        </div>
+                    </div>
+                    <div class="col-12 text-center">
+                        <button class="btn btn-md btn-primary mt-2 py-1 w-100" type="submit">Sign in</button>
+                        <hr>
+                        <small>Or <a href="{{ url_for('signup') }}">Sign Up</a></small>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request
+
 from pymongo import MongoClient
 import os
 
@@ -15,7 +16,7 @@ charities = db.charities
 app = Flask(__name__)
 
 
-# Routes
+# Pages
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -36,8 +37,61 @@ def login_submit():
     return redirect(url_for("index"))
 
 
-@app.route("/register", methods=["POST"])
-def signup_submit():
+# Users
+@app.route("/users", methods=["GET"])
+def get_users():
+    return redirect(url_for("index"))
+
+
+@app.route("/users", methods=["POST"])
+def create_user():
+    password = request.form.get("password")
+    user = {
+        "first_name": request.form.get("first_name"),
+        "last_name": request.form.get("last_name"),
+        "email": request.form.get("email"),
+        "password": password
+    }
+    print(user)
+    return redirect(url_for("index"))
+
+
+@app.route("/users/:id", methods=["DELETE"])
+def delete_user():
+    return redirect(url_for("index"))
+
+
+# Donations
+@app.route("/donations", methods=["GET"])
+def get_donations():
+    return redirect(url_for("index"))
+
+
+@app.route("/donations/new", methods=["GET"])
+def new_donation():
+    return render_template("new_donation.html")
+
+
+@app.route("/donations", methods=["POST"])
+def create_donation():
+    donation = {
+        "donor_id": "",
+        "charity_id": request.form.get("charity_id"),
+        "amount_given": request.form.get("amount_given"),
+        "created_on": request.form.get("date_given")
+    }
+    # donations.insert_one(donation)
+    return redirect(url_for("index"))
+
+
+# Charities
+@app.route("/charities", methods=["GET"])
+def get_charities():
+    return redirect(url_for("index"))
+
+
+@app.route("/charities/", methods=["POST"])
+def create_charity():
     return redirect(url_for("index"))
 
 

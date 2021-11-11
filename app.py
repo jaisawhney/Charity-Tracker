@@ -1,9 +1,12 @@
-from flask import Flask, render_template, redirect, url_for, request
-
+from flask import Flask, flash, render_template, redirect, url_for, request, escape, session
+from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo import MongoClient
+from functools import wraps
+
 import os
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY")
 
 host = os.environ.get("MONGODB_URI", "mongodb://localhost:27017/Charity-tracker")
 client = MongoClient(host=host)
@@ -13,7 +16,17 @@ users = db.users
 donations = db.donations
 charities = db.charities
 
-app = Flask(__name__)
+
+def require_login(function):
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+        email = session.get("email")
+        if not email or not users.find_one({"email": email}):
+            flash("Login is needed to view that page!", "signin_error")
+            return redirect(url_for("login"))
+        return function(*args, **kwargs)
+
+    return wrapper
 
 
 # Pages
@@ -27,6 +40,11 @@ def login():
     return render_template("login.html")
 
 
+@app.route("/logout")
+def logout():
+    return redirect(url_for("login"))
+
+
 @app.route("/signup", methods=["GET"])
 def signup():
     return render_template("signup.html")
@@ -34,7 +52,22 @@ def signup():
 
 @app.route("/login", methods=["POST"])
 def login_submit():
+    user = users.find_one({"email": request.form.get("email")})
+    password = request.form.get("password")
+
+    if not user or not check_password_hash(user["password"], password):
+        flash("Incorrect login details!", "signup_error")
+        return redirect(url_for("login"))
+    session["email"] = user.get("email")
     return redirect(url_for("index"))
+
+
+@app.route("/dashboard", methods=["GET"])
+@require_login
+def view_dashboard():
+    user = users.find_one({"email": session.get("email")})
+
+    return render_template("dashboard.html", user=user)
 
 
 # Users
@@ -46,14 +79,24 @@ def get_users():
 @app.route("/users", methods=["POST"])
 def create_user():
     password = request.form.get("password")
+    email = escape(request.form.get("email"))
+
+    if not password or not email:
+        return "Invalid form data!", 400
+
+    if users.find_one({"email": email}):
+        flash("That email already exists!", "signup_error")
+        return redirect(url_for("signup"))
+
+    password_hash = generate_password_hash(password)
     user = {
-        "first_name": request.form.get("first_name"),
-        "last_name": request.form.get("last_name"),
-        "email": request.form.get("email"),
-        "password": password
+        "first_name": escape(request.form.get("first_name")),
+        "last_name": escape(request.form.get("last_name")),
+        "email": email,
+        "password": password_hash
     }
-    print(user)
-    return redirect(url_for("index"))
+    users.insert_one(user)
+    return redirect(url_for("login"))
 
 
 @app.route("/users/:id", methods=["DELETE"])

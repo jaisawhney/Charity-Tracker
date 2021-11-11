@@ -6,17 +6,27 @@
     <div class="d-flex justify-content-center align-items-center h-100">
         <div class="card signup-form">
             <div class="card-body">
+                {% with messages = get_flashed_messages(category_filter=["signup_error"]) %}
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-danger" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
                 <h1 class="card-title">Sign Up</h1>
                 <form class="row g-2" action="/users" method="POST">
                     <div class="col">
                         <label for="first_name">First Name</label>
                         <input id="first_name" name="first_name" type="text" class="form-control"
-                               placeholder="First name">
+                               placeholder="First name" required>
                     </div>
                     <div class="col">
                         <label for="last_name">Last Name</label>
-                        <input id="last_name" name="last_ name" type="text" class="form-control"
-                               placeholder="Last name">
+                        <input id="last_name" name="last_name" type="text" class="form-control"
+                               placeholder="Last name" required>
                     </div>
                     <div class="col-12">
                         <label for="email">Email</label>

@@ -1,10 +1,19 @@
-<nav class="navbar navbar-default bg-light">
-    <div class="container-fluid">
-        <div class="navbar-header">
-
-        </div>
-        <div class="pull-right">
-
+<nav class="navbar navbar-expand-md navbar-light fixed-top position-absolute">
+    <div class="container">
+        <p class="navbar-brand">Charity Tracker</p>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbar-links">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbar-links">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if active_page == 'home' else '' }}" href="./">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if active_page == 'login' else '' }}" href="./login">Login</a>
+                </li>
+            </ul>
         </div>
     </div>
 </nav>

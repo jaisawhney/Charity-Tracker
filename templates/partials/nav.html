@@ -1,6 +1,6 @@
-<nav class="navbar navbar-expand-md navbar-light fixed-top position-absolute">
+<nav class="navbar navbar-expand-md navbar-light">
     <div class="container">
-        <p class="navbar-brand">Charity Tracker</p>
+        <p class="navbar-brand p-0 m-0">Charity Tracker</p>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbar-links">
             <span class="navbar-toggler-icon"></span>
@@ -8,10 +8,13 @@
         <div class="collapse navbar-collapse" id="navbar-links">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link {{ 'active' if active_page == 'home' else '' }}" href="./">Home</a>
+                    <a class="nav-link {{ 'active' if active_page == 'home' else '' }}" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ 'active' if active_page == 'login' else '' }}" href="./login">Login</a>
+                    <a class="nav-link {{ 'active' if active_page == 'dash' else '' }}" href="/dashboard">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if active_page == 'login' else '' }}" href="/login">Login</a>
                 </li>
             </ul>
         </div>

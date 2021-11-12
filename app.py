@@ -59,15 +59,15 @@ def login_submit():
         flash("Incorrect login details!", "signup_error")
         return redirect(url_for("login"))
     session["email"] = user.get("email")
-    return redirect(url_for("index"))
+    return redirect(url_for("view_dashboard"))
 
 
 @app.route("/dashboard", methods=["GET"])
 @require_login
 def view_dashboard():
     user = users.find_one({"email": session.get("email")})
-
-    return render_template("dashboard.html", user=user)
+    all_donations = donations.find({"donor_id": user["_id"]})
+    return render_template("dashboard.html", donations=all_donations)
 
 
 # Users
@@ -111,19 +111,22 @@ def get_donations():
 
 
 @app.route("/donations/new", methods=["GET"])
+@require_login
 def new_donation():
-    return render_template("new_donation.html")
+    return render_template("log_donation.html")
 
 
 @app.route("/donations", methods=["POST"])
+@require_login
 def create_donation():
+    user = users.find_one({"email": session.get("email")})
     donation = {
-        "donor_id": "",
+        "donor_id": user["_id"],
         "charity_id": request.form.get("charity_id"),
         "amount_given": request.form.get("amount_given"),
         "created_on": request.form.get("date_given")
     }
-    # donations.insert_one(donation)
+    donations.insert_one(donation)
     return redirect(url_for("index"))
 
 

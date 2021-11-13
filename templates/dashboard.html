@@ -10,22 +10,37 @@
     </section>
     <!-- Donations -->
     <section>
-        <div class="row">
-            <div class="col-sm">
-                Row
-            </div>
-            <div class="col-sm">
-                Row
-            </div>
-            <div class="col-sm">
-                Row
-            </div>
-        </div>
-    </section>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Date Given</th>
+                <th scope="col">Amount Given</th>
+                <th scope="col">Charity</th>
+                <th scope="col" class="text-center">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if donation_count > 0 %}
 
-    <!-- Charities -->
-    <section>
+            {% for donation in donations %}
+            <tr class="align-middle">
+                <td>{{donation.created_on}}</td>
+                <td>{{donation.amount_given}}</td>
+                <td>Some charity</td>
+                <td class="text-center">
+                    <a href="#" class="btn btn-primary rounded-pill">View</a>
+                    <a href="#" class="btn btn-danger rounded-pill">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
 
+            {% else %}
+            <tr>
+                <td colspan="4" class="border-0">No donations yet!</td>
+            </tr>
+            {% endif %}
+            </tbody>
+        </table>
     </section>
 </div>
 {% endblock %}

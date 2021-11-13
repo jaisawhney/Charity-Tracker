@@ -67,7 +67,8 @@ def login_submit():
 def view_dashboard():
     user = users.find_one({"email": session.get("email")})
     all_donations = donations.find({"donor_id": user["_id"]})
-    return render_template("dashboard.html", donations=all_donations)
+    donation_count = donations.count_documents({"donor_id": user["_id"]})
+    return render_template("dashboard.html", user=user, donations=all_donations, donation_count=donation_count)
 
 
 # Users
@@ -78,11 +79,14 @@ def get_users():
 
 @app.route("/users", methods=["POST"])
 def create_user():
-    password = request.form.get("password")
+    first_name = escape(request.form.get("first_name"))
+    last_name = escape(request.form.get("last_name"))
     email = escape(request.form.get("email"))
+    password = request.form.get("password")
 
-    if not password or not email:
-        return "Invalid form data!", 400
+    if not first_name or not last_name or not email or not password:
+        flash("One or more required fields were missing!", "signup_error")
+        return redirect(url_for("signup"))
 
     if users.find_one({"email": email}):
         flash("That email already exists!", "signup_error")
@@ -90,8 +94,8 @@ def create_user():
 
     password_hash = generate_password_hash(password)
     user = {
-        "first_name": escape(request.form.get("first_name")),
-        "last_name": escape(request.form.get("last_name")),
+        "first_name": first_name,
+        "last_name": last_name,
         "email": email,
         "password": password_hash
     }

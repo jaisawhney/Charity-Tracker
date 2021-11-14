@@ -4,8 +4,10 @@
 {% block content %}
 <div class="container">
     <section>
+        <div id="alerts" class="alert alert-danger" style="display: none" role="alert"></div>
         <header>
             <h1>Dashboard</h1>
+            <a href="{{ url_for('new_donation') }}" class="btn btn-sm btn-success">Add Donation</a>
         </header>
     </section>
     <!-- Donations -->
@@ -16,31 +18,49 @@
                 <th scope="col">Date Given</th>
                 <th scope="col">Amount Given</th>
                 <th scope="col">Charity</th>
-                <th scope="col" class="text-center">Action</th>
+                <th scope="col" class="text-right">Actions</th>
             </tr>
             </thead>
             <tbody>
-            {% if donation_count > 0 %}
-
             {% for donation in donations %}
             <tr class="align-middle">
                 <td>{{donation.created_on}}</td>
-                <td>{{donation.amount_given}}</td>
+                <td>${{donation.amount_given}}</td>
                 <td>Some charity</td>
-                <td class="text-center">
-                    <a href="#" class="btn btn-primary rounded-pill">View</a>
-                    <a href="#" class="btn btn-danger rounded-pill">Delete</a>
+                <td>
+                    <form action="/donations/{{donation._id}}" data-method="DELETE">
+                        <button type="button" class="btn btn-sm btn-primary rounded-pill">View</button>
+                        <button type="submit" type="button" class="btn btn-sm btn-danger rounded-pill">Delete</button>
+                    </form>
                 </td>
             </tr>
-            {% endfor %}
-
             {% else %}
             <tr>
                 <td colspan="4" class="border-0">No donations yet!</td>
             </tr>
-            {% endif %}
+            {% endfor %}
             </tbody>
         </table>
     </section>
+    <script>
+        document.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const form = e.target;
+            fetch(form.action, {
+                method: form.dataset.method,
+                body: new FormData(form),
+            }).then(res => {
+                if (res.ok) {
+                    window.location.reload();
+                } else {
+                    const alerts = document.querySelector("#alerts");
+                    alerts.style.display = ""
+                    alerts.innerHTML = "Something went wrong"
+                }
+            });
+
+        });
+    </script>
 </div>
 {% endblock %}

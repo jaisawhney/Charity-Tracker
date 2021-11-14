@@ -1,7 +1,9 @@
+import pymongo
 from flask import Flask, flash, render_template, redirect, url_for, request, escape, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo import MongoClient
 from functools import wraps
+from bson.objectid import ObjectId
 
 import os
 
@@ -22,6 +24,7 @@ def require_login(function):
     def wrapper(*args, **kwargs):
         email = session.get("email")
         if not email or not users.find_one({"email": email}):
+            session.pop('_flashes', None)
             flash("Login is needed to view that page!", "signin_error")
             return redirect(url_for("login"))
         return function(*args, **kwargs)
@@ -56,7 +59,7 @@ def login_submit():
     password = request.form.get("password")
 
     if not user or not check_password_hash(user["password"], password):
-        flash("Incorrect login details!", "signup_error")
+        flash("Incorrect login details!", "signin_error")
         return redirect(url_for("login"))
     session["email"] = user.get("email")
     return redirect(url_for("view_dashboard"))
@@ -66,9 +69,9 @@ def login_submit():
 @require_login
 def view_dashboard():
     user = users.find_one({"email": session.get("email")})
-    all_donations = donations.find({"donor_id": user["_id"]})
-    donation_count = donations.count_documents({"donor_id": user["_id"]})
-    return render_template("dashboard.html", user=user, donations=all_donations, donation_count=donation_count)
+    user_donations = donations.find({"donor_id": user["_id"]}).sort("created_on", pymongo.DESCENDING)
+    # donation_count = donations.count_documents({"donor_id": user["_id"]})
+    return render_template("dashboard.html", user=user, donations=user_donations)
 
 
 # Users
@@ -103,8 +106,8 @@ def create_user():
     return redirect(url_for("login"))
 
 
-@app.route("/users/:id", methods=["DELETE"])
-def delete_user():
+@app.route("/users/<string:user_id>", methods=["DELETE"])
+def delete_user(user_id):
     return redirect(url_for("index"))
 
 
@@ -131,7 +134,15 @@ def create_donation():
         "created_on": request.form.get("date_given")
     }
     donations.insert_one(donation)
-    return redirect(url_for("index"))
+    return redirect(url_for("view_dashboard"))
+
+
+@app.route("/donations/<string:donation_id>", methods=["DELETE"])
+@require_login
+def delete_donation(donation_id):
+    user = users.find_one({"email": session.get("email")})
+    donations.remove({"_id": ObjectId(donation_id), "donor_id": user["_id"]})
+    return "Donation deleted", 200
 
 
 # Charities

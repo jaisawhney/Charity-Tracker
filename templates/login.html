@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-center align-items-center h-100">
         <div class="card login-form">
             <div class="card-body">
-                {% with messages = get_flashed_messages(category_filter=["signin_error"]) %}
+                {% with messages = get_flashed_messages(category_filter=["app_warning"]) %}
                 {% if messages %}
                 {% for message in messages %}
                 <div class="alert alert-danger" role="alert">
@@ -21,20 +21,21 @@
                         <div class="form-group">
                             <label for="email">Email</label>
                             <input type="email" id="email" name="email" class="form-control" placeholder="Email"
+                                   value="demo@example.com"
                                    required>
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="form-group mt-3">
                             <label for="password">Password</label>
-                            <input type="password" id="password" name="password" class="form-control"
+                            <input type="password" id="password" name="password" class="form-control" value="Abc123"
                                    placeholder="Password" required>
                         </div>
                     </div>
                     <div class="col-12 text-center">
                         <button class="btn btn-md btn-primary mt-2 py-1 w-100" type="submit">Sign in</button>
                         <hr>
-                        <small>Or <a href="{{ url_for('signup') }}">Sign Up</a></small>
+                        <small>Or <a href="{{ url_for('routes.signup') }}">Sign Up</a></small>
                     </div>
                 </form>
             </div>

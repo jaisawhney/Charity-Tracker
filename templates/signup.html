@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-center align-items-center h-100">
         <div class="card signup-form">
             <div class="card-body">
-                {% with messages = get_flashed_messages(category_filter=["signup_error"]) %}
+                {% with messages = get_flashed_messages(category_filter=["app_warning"]) %}
                 {% if messages %}
                 {% for message in messages %}
                 <div class="alert alert-danger" role="alert">
@@ -40,7 +40,7 @@
                     <div class="text-center">
                         <button class="btn btn-md btn-primary mt-2 py-1 w-100" type="submit">Sign up</button>
                         <hr>
-                        <small>Or <a href="{{ url_for('login') }}">Login</a></small>
+                        <small>Or <a href="{{ url_for('routes.login') }}">Login</a></small>
                     </div>
                 </form>
             </div>

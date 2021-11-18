@@ -13,9 +13,15 @@
                 <li class="nav-item">
                     <a class="nav-link {{ 'active' if active_page == 'dash' else '' }}" href="/dashboard">Dashboard</a>
                 </li>
+                {% if session["email"] %}
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if active_page == 'login' else '' }}" href="/logout">Logout</a>
+                </li>
+                {% else %}
                 <li class="nav-item">
                     <a class="nav-link {{ 'active' if active_page == 'login' else '' }}" href="/login">Login</a>
                 </li>
+                {% endif %}
             </ul>
         </div>
     </div>

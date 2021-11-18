@@ -17,7 +17,7 @@ def require_login(function):
         email = session.get("email")
         if not email or not users.find_one({"email": email}):
             session.pop("_flashes", None)
-            flash("Login is needed to view that page!", "app_warning")
+            flash("You must login to view that page!", "app_warning")
             return redirect(url_for("routes.login"))
         return function(*args, **kwargs)
 
@@ -37,6 +37,7 @@ def login():
 
 @routes.route("/logout")
 def logout():
+    session.pop("email", None)
     return redirect(url_for("routes.login"))
 
 
@@ -63,12 +64,12 @@ def view_dashboard():
     user = users.find_one({"email": session.get("email")})
     user_donations = donations.find({"donor_id": user["_id"]}).sort("created_on", pymongo.DESCENDING)
     donation_info_cursor = donations.aggregate([{"$match": {"donor_id": user["_id"]}},
-                                         {"$group": {"_id": None, "total_given": {"$sum": "$amount_given"},
-                                                     "total_donations": {"$sum": 1}}},
-                                         {"$limit": 1}])
+                                                {"$group": {"_id": None,
+                                                            "total_given": {"$sum": "$amount_given"},
+                                                            "total_donations": {"$sum": 1}}},
+                                                {"$limit": 1}])
     donation_info_list = list(donation_info_cursor)
     donation_info = donation_info_list[0] if len(donation_info_list) != 0 else None
-    print(donation_info)
     return render_template("dashboard.html", user=user, donations=user_donations, donation_info=donation_info)
 
 
@@ -104,15 +105,15 @@ def create_user():
     return redirect(url_for("routes.login"))
 
 
-@routes.route("/users/<string:user_id>", methods=["DELETE"])
-def delete_user(user_id):
-    return redirect(url_for("routes.index"))
+# @routes.route("/users/<string:user_id>", methods=["DELETE"])
+# def delete_user(user_id):
+#    pass
 
 
 # Donations
-@routes.route("/donations", methods=["GET"])
-def get_donations():
-    return redirect(url_for("routes.index"))
+# @routes.route("/donations", methods=["GET"])
+# def get_donations():
+#    pass
 
 
 @routes.route("/donations/new", methods=["GET"])
@@ -129,7 +130,7 @@ def create_donation():
     created_on = request.form.get("date_given")
     amount_given = request.form.get("amount_given")
 
-    if not amount_given or not created_on:
+    if not charity_name or not amount_given or not created_on:
         flash("One or more required fields were missing!", "app_warning")
         return redirect(url_for("routes.new_donation"))
 

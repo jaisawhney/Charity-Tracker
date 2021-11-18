@@ -7,14 +7,36 @@
         <div id="alerts" class="alert alert-danger" style="display: none" role="alert"></div>
         <header>
             <h1>Dashboard</h1>
-            <a href="{{ url_for('new_donation') }}" class="btn btn-sm btn-success">Add Donation</a>
         </header>
+
+        <div class="row g-3">
+            <div class="col-sm-auto">
+                <div class="card stats">
+                    <div class="card-body">
+                        <strong class="card-title text-uppercase">Total Donations</strong>
+                        <small class="d-block">{{ donation_info.total_donations if donation_info else "0"}}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-auto">
+                <div class="card stats">
+                    <div class="card-body">
+                        <strong class="card-title text-uppercase">Total Given</strong>
+                        <small class="d-block">${{ donation_info.total_given if donation_info else "0"}}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
+
     <!-- Donations -->
     <section>
-        <table class="table">
+        <table class="table table-bordered mt-3">
             <thead>
             <tr>
+                <td colspan="4"><h2>Donations</h2></td>
+            </tr>
+            <tr class="bg-light">
                 <th scope="col">Date Given</th>
                 <th scope="col">Amount Given</th>
                 <th scope="col">Charity</th>
@@ -26,7 +48,7 @@
             <tr class="align-middle">
                 <td>{{donation.created_on}}</td>
                 <td>${{donation.amount_given}}</td>
-                <td>Some charity</td>
+                <td>{{donation.charity_id}}</td>
                 <td>
                     <form action="/donations/{{donation._id}}" data-method="DELETE">
                         <button type="button" class="btn btn-sm btn-primary rounded-pill">View</button>
@@ -36,11 +58,12 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="4" class="border-0">No donations yet!</td>
+                <td colspan="4">No donations yet!</td>
             </tr>
             {% endfor %}
             </tbody>
         </table>
+        <a href="{{ url_for('routes.new_donation') }}" class="btn btn-sm btn-success">Add Donation</a>
     </section>
     <script>
         document.addEventListener("submit", (e) => {
@@ -59,7 +82,6 @@
                     alerts.innerHTML = "Something went wrong"
                 }
             });
-
         });
     </script>
 </div>

@@ -156,14 +156,3 @@ def delete_donation(donation_id):
     user = users.find_one({"email": session.get("email")})
     donations.remove({"_id": ObjectId(donation_id), "donor_id": user["_id"]})
     return "Donation deleted", 200
-
-
-# Charities
-@routes.route("/charities", methods=["GET"])
-def get_charities():
-    return redirect(url_for("routes.index"))
-
-
-@routes.route("/charities/", methods=["POST"])
-def create_charity():
-    return redirect(url_for("routes.index"))

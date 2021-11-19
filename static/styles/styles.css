@@ -12,3 +12,7 @@ html, body {
 .stats {
     width: 15rem;
 }
+
+.jumbo {
+    height: calc(100vh - 56px);
+}
